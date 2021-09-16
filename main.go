@@ -26,6 +26,7 @@ type Properties struct {
 	Subject string `json:"subject"`
 	Message string `json:"message"`
 	Status string `json:"status"`
+	Id string `json:"id"`
 }
 
 // Payload struct includes Properties struct for post to Zenduty webhook URL
@@ -117,14 +118,25 @@ func parseAnnotations(event *types.Event) string {
 	return output
 }
 
+// Gets ID of the event to set as Zenduty Entity Id, if ID doesn't exist(?) check name is used.
+func getID(event *types.Event) string {
+	var output string
+	// if len(event.ID)>0{
+	// 	output = string(event.ID)
+	// } else{
+		output = event.Check.Name
+	// }
+	return output
+}
+
 // eventSubject func returns a one-line short summary
 func eventSubject(event *types.Event) string {
-	return fmt.Sprintf("%s %s on host %s", event.Check.Name, formattedEventAction(event), event.Entity.Name)
+	return fmt.Sprintf("The %s check has changed to %s on host %s", event.Check.Name, formattedEventAction(event), event.Entity.Name)
 }
 
 // eventDescription func returns a formatted message
 func eventDescription(event *types.Event) string {
-	return fmt.Sprintf("Server: %s, \nCheck: %s, \nStatus: %s, \nCheck Output: %s, \nAnnotation Information:\n%s", event.Entity.Name, event.Check.Name, formattedEventAction(event), event.Check.Output, parseAnnotations(event))
+	return fmt.Sprintf("Server: %s, \nCheck: %s, \nStatus: %s, \nCheck Output: %s, \nAnnotation Information: %s\n", event.Entity.Name, event.Check.Name, formattedEventAction(event), event.Check.Output, parseAnnotations(event))
 }
 
 func run(cmd *cobra.Command, args []string) error {
@@ -170,7 +182,7 @@ func run(cmd *cobra.Command, args []string) error {
 			Subject: eventSubject(event),
 			Message: eventDescription(event),
 			Status: formattedEventAction(event),
-
+			Id : getID(event),
 		},
 	}
 	bodymarshal, err := json.Marshal(formPost)

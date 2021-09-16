@@ -3,9 +3,10 @@
 [![Go Test](https://github.com/windynik/sensu-go-zenduty-handler/workflows/Go%20Test/badge.svg)](https://github.com/windynik/sensu-go-zenduty-handler/actions?query=workflow%3A%22Go+Test%22)
 [![goreleaser](https://github.com/windynik/sensu-go-zenduty-handler/workflows/goreleaser/badge.svg)](https://github.com/windynik/sensu-go-zenduty-handler/actions?query=workflow%3Agoreleaser)
 
-# Handler Plugin Template
+<!-- # Zenduty Handler Plugin
 
 ## Overview
+
 handler-plugin-template is a template repository which wraps the [Sensu Plugin SDK][2].
 To use this project as a template, click the "Use this template" button from the main project page.
 Once the repository is created from this template, you can use the [Sensu Plugin Tool][9] to
@@ -28,11 +29,12 @@ To release a version of your project, simply tag the target sha with a semver re
 prefix (ex. `1.0.0`). This will trigger the [GitHub action][5] workflow to [build and release][4]
 the plugin with goreleaser. Register the asset with [Bonsai][8] to share it with the community!
 
-***
+--- -->
 
-# sensu-go-zenduty-handler
+# Sensu Go Zenduty Plugin
 
 ## Table of Contents
+
 - [Overview](#overview)
 - [Files](#files)
 - [Usage examples](#usage-examples)
@@ -46,11 +48,22 @@ the plugin with goreleaser. Register the asset with [Bonsai][8] to share it with
 
 ## Overview
 
-The sensu-go-zenduty-handler is a [Sensu Handler][6] that ...
-
-## Files
+The Sensu Zenduty Handler is a [Sensu Handler][6] that can trigger and resolve incident in Zenduty for alerting Operators and entities.
 
 ## Usage examples
+
+### Help
+
+```
+Usage:
+  sensu-go-zenduty-handler [flags]
+
+Flags:
+  -d, --debug                    Enable debug mode, which prints JSON object which would be POSTed to the Zenduty webhook instead of actually POSTing it
+  -h, --help                     help for sensu-go-zenduty-handler
+  -w, --webhook string           The Zenduty Webhook URL, use default from ZENDUTY_WEBHOOK env var
+  -a, --withAnnotations string   The Zenduty handler will parse check and entity annotations with these values. Use ZENDUTY_ANNOTATIONS env var with commas, like: documentation,playbook
+```
 
 ## Configuration
 
@@ -70,41 +83,22 @@ If you're using an earlier version of sensuctl, you can find the asset on the [B
 
 ```yml
 ---
-type: Handler
 api_version: core/v2
+type: Handler
 metadata:
   name: sensu-go-zenduty-handler
   namespace: default
 spec:
-  command: sensu-go-zenduty-handler --example example_arg
   type: pipe
+  command: 'sensu-go-zenduty-handler -w "${ZENDUTY_WEBHOOK}"'
+  timeout: 0
+  filters:
+    - is_incident
+    - not_silenced
+  env_vars:
+    - ZENDUTY_WEBHOOK={{YOUR_ZENDUTY_WEBHOOK}}
   runtime_assets:
-  - windynik/sensu-go-zenduty-handler
-```
-
-#### Proxy Support
-
-This handler supports the use of the environment variables HTTP_PROXY,
-HTTPS_PROXY, and NO_PROXY (or the lowercase versions thereof). HTTPS_PROXY takes
-precedence over HTTP_PROXY for https requests.  The environment values may be
-either a complete URL or a "host[:port]", in which case the "http" scheme is assumed.
-
-### Annotations
-
-All arguments for this handler are tunable on a per entity or check basis based on annotations.  The
-annotations keyspace for this handler is `sensu.io/plugins/sensu-go-zenduty-handler/config`.
-
-#### Examples
-
-To change the example argument for a particular check, for that checks's metadata add the following:
-
-```yml
-type: CheckConfig
-api_version: core/v2
-metadata:
-  annotations:
-    sensu.io/plugins/sensu-go-zenduty-handler/config/example-argument: "Example change"
-[...]
+    - sensu-go-zenduty-handler
 ```
 
 ## Installation from source
@@ -119,13 +113,6 @@ From the local path of the sensu-go-zenduty-handler repository:
 go build
 ```
 
-## Additional notes
-
-## Contributing
-
-For more information about contributing to this plugin, see [Contributing][1].
-
-[1]: https://github.com/sensu/sensu-go/blob/master/CONTRIBUTING.md
 [2]: https://github.com/sensu-community/sensu-plugin-sdk
 [3]: https://github.com/sensu-plugins/community/blob/master/PLUGIN_STYLEGUIDE.md
 [4]: https://github.com/sensu-community/handler-plugin-template/blob/master/.github/workflows/release.yml
