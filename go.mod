@@ -1,4 +1,4 @@
-module github.com/zenduty/sensu-go-zenduty-handler
+module github.com/Zenduty/sensu-go-zenduty-handler
 
 go 1.14
 
