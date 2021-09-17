@@ -70,7 +70,7 @@ spec:
   env_vars:
     - ZENDUTY_WEBHOOK={{YOUR_ZENDUTY_WEBHOOK}}
   runtime_assets:
-    - sensu-go-zenduty-handler
+    - Zenduty/sensu-go-zenduty-handler
 ```
 
 ## Installation from source
